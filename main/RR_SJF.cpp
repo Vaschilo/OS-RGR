@@ -78,21 +78,26 @@ void RR_SJF::print_logs()
 		cout << f((*it).GetStatus()) << "\t";
 	cout << endl;
 }
-bool RR_SJF::fin()
+bool RR_SJF::fin(St status)
 {
 	int counter = 0;
 	for (auto it = this->v.begin(); it != v.end(); it++)
 	{
-		if ((*it).GetStatus() == St::done) counter++;
+		if ((*it).GetStatus() == status) counter++;
 	}
 	if (counter == v.size()) return false;
 	return true;
 }
 void RR_SJF::ChangeTOS() 
 {
+	this->systime++;
 	for (auto it = this->v.begin(); it != v.end(); it++)
 	{
-		(*it).SetAllTime((*it).GetAllTime() + 1);
+		if ((*it).GetStatus() == St::ready || (*it).GetStatus() == St::run)
+			(*it).SetAllTime((*it).GetAllTime() + 1);
+		if ((*it).GetStatus() == St::not_launched)
+			if ((*it).GetBTime() > 0) (*it).SetBTime((*it).GetBTime() - 1);
+			else (*it).SetStatus(St::ready);
 	}
 }
 void RR_SJF::start()
@@ -107,13 +112,17 @@ void RR_SJF::start()
 	cout << "\n\n"; for (int i = 0; i < v.size(); i++) cout << v[i].GetName() << "\t";
 	cout << endl;
 
-	int Kvant = 0;
 	int Q = Kvant_const;
 
-	auto IT = this->v.begin();
-	while (fin())
+	while (!fin(St::not_launched)) 
 	{
-		if (IT->GetStatus() != St::done)
+		ChangeTOS(); print_logs();
+	}
+
+	auto IT = this->v.begin();
+	while (fin(St::done))
+	{
+		if (IT->GetStatus() != St::done && IT->GetStatus() != St::not_launched)
 		{
 			IT->SetStatus(St::run);
 			for (int i = 0; i < Q; i++)
@@ -130,4 +139,16 @@ void RR_SJF::start()
 		++IT;
 		if (IT == this->v.end()) { IT = this->v.begin(); }
 	};
+
+	cout << "\n\nВремя на выполнение всех процессов - " << this->systime << "\n\n";
+
+	for (auto it = v.begin(); it != v.end(); it++)
+	{
+		cout << (*it).GetName() << ":" << endl;
+		cout << "T – общее время пребывания процесса в системе = " << (*it).GetAllTime() << endl;
+		cout << "Потерянное время M = T - t =  " << (*it).GetAllTime() - (*it).Gett() << endl;
+		cout << "Отношение Реактивности R = t / T = " << ((*it).Gett() * 1.0) / (*it).GetAllTime() << endl;
+		cout << "Штрафное отношение P = T / t  = " << ((*it).GetAllTime() * 1.0) / (*it).Gett() << endl;
+		cout << endl;
+	}
 }

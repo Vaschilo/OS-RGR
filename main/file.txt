@@ -1,4 +1,4 @@
 Alfa 5 10
 Beta 4 20
-Gamma 1 5
-Tetta 2 7
+Gamma 7 5
+Tetta 6 7

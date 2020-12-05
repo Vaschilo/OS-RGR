@@ -19,6 +19,7 @@ private:
 	int b_time;
 	int time_on_system = 0;
 	St status;
+	int t;
 public:
 	Process() 
 	{
@@ -26,6 +27,7 @@ public:
 		this->runtime = 0;
 		this->b_time = 0;
 		this->status = St::not_launched;
+		t = runtime + b_time;
 	}
 	Process(string name, int runtime, int birth_time) 
 	{
@@ -33,16 +35,11 @@ public:
 		this->runtime = runtime;
 		this->b_time = birth_time;
 		this->status = St::not_launched;
+		t = runtime + birth_time;
 	}
 
-	void SetStatus(St status)
-	{
-		this->status = status;
-	}
-	St GetStatus()
-	{
-		return this->status;
-	}
+	void SetStatus(St status) {this->status = status;}
+	St GetStatus() {return this->status;}
 
 	string GetName() { return this->name; }
 
@@ -52,19 +49,18 @@ public:
 	int GetRTime() { return this->runtime; }
 	void SetRTime(int runtime) { this->runtime = runtime; }
 
-	void SetAllTime(int time) { this->time_on_system = time; };
 	int GetAllTime() { return this->time_on_system; };
+	void SetAllTime(int time) { this->time_on_system = time; };
 
-	void IsProcessDone()
-	{
-		if (this->GetRTime() <= 0) this->SetStatus(St::done);
-	}
+	int Gett() { return this->t; }
+
+	void IsProcessDone() { if (this->GetRTime() <= 0) this->SetStatus(St::done); }
 
 	friend istream& operator >>(istream& in, Process& pr)
 	{
 		in >> pr.name >> pr.b_time >> pr.runtime;
+		pr.t = pr.runtime + pr.b_time;
 		return in;
 	}
-
 	~Process() {}
 };
