@@ -3,12 +3,12 @@
 #include <iostream>
 using namespace std;
 
-enum St
+enum class St
 {
-	not_launched,
-	ready,
-	run,
-	done
+	not_launched = 0,
+	ready = 1,
+	run = 2,
+	done = 3
 };
 
 class Process
@@ -17,6 +17,7 @@ private:
 	string name;
 	int runtime;
 	int b_time;
+	int time_on_system = 0;
 	St status;
 public:
 	Process() 
@@ -26,40 +27,42 @@ public:
 		this->b_time = 0;
 		this->status = St::not_launched;
 	}
-	Process(string name, int runtime, int birth_time, St status) 
+	Process(string name, int runtime, int birth_time) 
 	{
 		this->name = name;
 		this->runtime = runtime;
 		this->b_time = birth_time;
+		this->status = St::not_launched;
+	}
+
+	void SetStatus(St status)
+	{
 		this->status = status;
 	}
-	bool ready()
+	St GetStatus()
 	{
-		if (this->status == St::ready) return true;
-		return false;
+		return this->status;
 	}
-	string GetStatus()
-	{
-		switch (this->status)
-		{
-		case 0:return "not_l";
-		case 1:return "ready";
-		case 2:return "run";
-		case 3:return "done";
-		}
-	}
+
 	string GetName() { return this->name; }
+
+	int GetBTime() { return this->b_time; }
+	void SetBTime(int b_time) { this->b_time = b_time; }
+
+	int GetRTime() { return this->runtime; }
+	void SetRTime(int runtime) { this->runtime = runtime; }
+
+	void SetAllTime(int time) { this->time_on_system = time; };
+	int GetAllTime() { return this->time_on_system; };
+
+	void IsProcessDone()
+	{
+		if (this->GetRTime() <= 0) this->SetStatus(St::done);
+	}
 
 	friend istream& operator >>(istream& in, Process& pr)
 	{
-		string helper = "";
-		in >> pr.name >> pr.b_time >> pr.runtime >> helper;
-
-		pr.status = St::done;
-		if (helper == "not_l") pr.status = St::not_launched;
-		if (helper == "ready") pr.status = St::ready;
-		if (helper == "run") pr.status = St::run;
-		if (helper == "done") pr.status = St::done;
+		in >> pr.name >> pr.b_time >> pr.runtime;
 		return in;
 	}
 

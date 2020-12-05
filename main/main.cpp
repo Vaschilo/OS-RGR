@@ -8,6 +8,7 @@
 
 int main()
 {
+	setlocale(LC_ALL, "rus");
 	RR_SJF a;
 	return 0;
 }
