@@ -35,7 +35,7 @@ public:
 		this->runtime = runtime;
 		this->b_time = birth_time;
 		this->status = St::not_launched;
-		t = runtime + birth_time;
+		t = runtime;
 	}
 
 	void SetStatus(St status) {this->status = status;}
@@ -59,7 +59,7 @@ public:
 	friend istream& operator >>(istream& in, Process& pr)
 	{
 		in >> pr.name >> pr.b_time >> pr.runtime;
-		pr.t = pr.runtime + pr.b_time;
+		pr.t = pr.runtime;
 		return in;
 	}
 	~Process() {}

@@ -13,13 +13,17 @@ private:
 	vector<Process> v;
 	int systime = 0;
 public:
-	void start();
 	void from_file();
 	void from_hand();
+
 	void print();
-	bool fin(St status);
-	void ChangeTOS();
 	void print_logs();
+
+	void start();
+	bool fin();
+	vector<Process>::iterator GetIT(int num);
+	void specifications();
+	int GetNewProcess();
 
 	RR_SJF();
 	~RR_SJF() {}

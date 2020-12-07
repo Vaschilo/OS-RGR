@@ -59,25 +59,25 @@ void RR_SJF::from_hand()
 		cin >> n;
 		return n;
 	};
-	function<int(string)> f = [](string a)
+	function<int(string, int)> f = [](string a, int left_limit)
 	{
 		int n = 1;
 		do
 		{
-			if (n < 0) cout << "¬ведите значение больше 0";
+			if (n < left_limit) cout << "¬ведите значение больше 0";
 			cout << "\n" << a << "\n";
 			cin >> n;
-		} while (n < 0);
+		} while (n < left_limit);
 		return n;
 	};
 
-	int n = f("¬ведите число процессов");
+	int n = f("¬ведите число процессов", 1);
 	string PrName;
 
 	for (int i = 0; i < n; i++)
 	{
 		PrName = f2("¬ведите название процесса");
-		this->v.push_back(Process(PrName, f("¬ведите врем€ выполнени€ процесса"), f("¬ведите врем€ по€влени€ процесса в системе")));
+		this->v.push_back(Process(PrName, f("¬ведите врем€ выполнени€ процесса", 0), f("¬ведите врем€ по€влени€ процесса в системе", 0)));
 	}
 }
 
@@ -101,70 +101,93 @@ void RR_SJF::print_logs()
 	cout << endl;
 }
 
-bool RR_SJF::fin(St status)
+int RR_SJF::GetNewProcess()
 {
-	int counter = 0;
-	for (auto it = this->v.begin(); it != v.end(); it++)
+	int min = INT_MAX;
+	int num = -1;
+	int i = 0;
+	for (auto IT = this->v.begin(); IT != this->v.end(); IT++, i++)
 	{
-		if ((*it).GetStatus() == status) counter++;
+		if ((*IT).GetRTime() == 0) (*IT).SetStatus(St::done);
+		if ((*IT).GetStatus() == St::not_launched)
+		{
+			if ((*IT).GetBTime() == 0) (*IT).SetStatus(St::ready);
+			(*IT).SetBTime((*IT).GetBTime() - 1);
+		}
+		if ((*IT).GetStatus() == St::ready || (*IT).GetStatus() == St::run)
+		{
+			(*IT).SetAllTime((*IT).GetAllTime() + 1);
+			if ((*IT).GetRTime() < min)
+			{
+			min = (*IT).GetRTime();
+			num = i;
+			}
+		}
 	}
-	if (counter == v.size()) return false;
-	return true;
+	return num;
 }
 
-void RR_SJF::ChangeTOS() 
+vector<Process>::iterator RR_SJF::GetIT(int num)
 {
-	this->systime++;
-	for (auto it = this->v.begin(); it != v.end(); it++)
-	{
-		if ((*it).GetStatus() == St::ready || (*it).GetStatus() == St::run)
-			(*it).SetAllTime((*it).GetAllTime() + 1);
-		if ((*it).GetStatus() == St::not_launched)
-			if ((*it).GetBTime() > 0) (*it).SetBTime((*it).GetBTime() - 1);
-			else (*it).SetStatus(St::ready);
-	}
+	auto it = this->v.begin();
+	while (num--)it++;
+	return it;
 }
 
 void RR_SJF::start()
 {
 	system("cls");
-	sort(this->v.begin(), this->v.end(), [](Process& a, Process& b)
-		{
-			if (a.GetBTime() + a.GetRTime() < b.GetBTime() + b.GetRTime()) return true;
-			return false;
-		});
 	print();
-	cout << "\n\n"; for (int i = 0; i < v.size(); i++) cout << v[i].GetName() << "\t";
+	cout << "\n\n"; 
+	auto IT = this->v.begin();
+
+	for (;IT!=v.end();IT++)
+	{
+		cout << (*IT).GetName() << "\t";
+		if ((*IT).GetBTime() == 0)
+			(*IT).SetStatus(St::ready);
+		else (*IT).SetStatus(St::not_launched);
+	}
 	cout << endl;
 
-	int Q = Kvant_const;
+	int PrPrev = -1;
+	int PrNow = 0;
 
-	while (!fin(St::not_launched)) 
+	while (fin())
 	{
-		ChangeTOS(); print_logs();
-	}
+		this->systime++;
+		PrNow = this->GetNewProcess();
+		if (PrNow == -1) { this->print_logs(); continue; }
+		IT = this->GetIT(PrNow);
+		(*IT).SetStatus(St::run);
 
-	auto IT = this->v.begin();
-	while (fin(St::done))
-	{
-		if (IT->GetStatus() != St::done && IT->GetStatus() != St::not_launched)
+		if (PrPrev != PrNow)
 		{
-			IT->SetStatus(St::run);
-			for (int i = 0; i < Q; i++)
-			{
-				(*IT).IsProcessDone();
-				ChangeTOS();
-				IT->SetRTime(IT->GetRTime() - 1);
-				print_logs();
-				(*IT).IsProcessDone();
-			};
-			IT->SetStatus(St::ready);
-			(*IT).IsProcessDone();
+			if (PrPrev == -1) { PrPrev = PrNow; continue; }
+			IT = this->GetIT(PrPrev);
+			if ((*IT).GetRTime() == 0)
+				(*IT).SetStatus(St::done);
+			else (*IT).SetStatus(St::ready);
+			PrPrev = PrNow;
 		}
-		++IT;
-		if (IT == this->v.end()) { IT = this->v.begin(); }
+
+		this->print_logs();
+		(*IT).SetRTime((*IT).GetRTime() - 1);
 	};
 
+	this->specifications();
+}
+
+bool RR_SJF::fin()
+{
+	int i = 0;
+	for (auto it = v.begin(); it != v.end(); it++)
+		if ((*it).GetStatus() == St::done) i++;
+	if (i == 5) return false;
+	return true;
+}
+void RR_SJF::specifications()
+{
 	cout << "\n\n¬рем€ на выполнение всех процессов - " << this->systime << "\n\n";
 
 	for (auto it = v.begin(); it != v.end(); it++)
