@@ -152,6 +152,7 @@ void RR_SJF::start()
 
 	int PrPrev = -1;
 	int PrNow = 0;
+	this->print_logs();
 
 	while (fin())
 	{
