@@ -1,5 +1,26 @@
 #include "RR_SJF.h"
 
+RR_SJF::RR_SJF()
+{
+	int n = 1;
+	do
+	{
+		system("cls");
+		if (n <= 0 || n >= 3) cout << "Введите корректное значение";
+		cout << "\tВыберите способ ввода процессов\n\n\t1-c клавиатуры\t2-из файла\n";
+		cin >> n;
+	} while (n <= 0 || n >= 3);
+	switch (n)
+	{
+	case 1:
+		this->from_hand();
+		break;
+	case 2:
+		this->from_file();
+		break;
+	}
+	this->start();
+}
 void RR_SJF::from_file()
 {
 	fstream f;
@@ -59,6 +80,7 @@ void RR_SJF::from_hand()
 		this->v.push_back(Process(PrName, f("Введите время выполнения процесса"), f("Введите время появления процесса в системе")));
 	}
 }
+
 void RR_SJF::print()
 {
 	cout << "Name" << "\t" << "Birth" << "\t" << "Runtime" << endl;
@@ -78,6 +100,7 @@ void RR_SJF::print_logs()
 		cout << f((*it).GetStatus()) << "\t";
 	cout << endl;
 }
+
 bool RR_SJF::fin(St status)
 {
 	int counter = 0;
@@ -88,6 +111,7 @@ bool RR_SJF::fin(St status)
 	if (counter == v.size()) return false;
 	return true;
 }
+
 void RR_SJF::ChangeTOS() 
 {
 	this->systime++;
@@ -100,6 +124,7 @@ void RR_SJF::ChangeTOS()
 			else (*it).SetStatus(St::ready);
 	}
 }
+
 void RR_SJF::start()
 {
 	system("cls");
@@ -144,7 +169,7 @@ void RR_SJF::start()
 
 	for (auto it = v.begin(); it != v.end(); it++)
 	{
-		cout << (*it).GetName() << ":" << endl;
+		cout << "\t" << (*it).GetName() << ":" << endl;
 		cout << "T – общее время пребывания процесса в системе = " << (*it).GetAllTime() << endl;
 		cout << "Потерянное время M = T - t =  " << (*it).GetAllTime() - (*it).Gett() << endl;
 		cout << "Отношение Реактивности R = t / T = " << ((*it).Gett() * 1.0) / (*it).GetAllTime() << endl;

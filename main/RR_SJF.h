@@ -21,26 +21,6 @@ public:
 	void ChangeTOS();
 	void print_logs();
 
-	RR_SJF() 
-	{
-		int n = 1;
-		do
-		{
-			system("cls");
-			if (n <= 0 || n >= 3) cout << "Введите корректное значение";
-			cout << "\tВыберите способ ввода процессов\n\n\t1-c клавиатуры\t2-из файла\n";
-			cin >> n;
-		} while (n <= 0 || n >= 3);
-		switch (n)
-		{
-		case 1:
-			this->from_hand();
-			break;
-		case 2:
-			this->from_file();
-			break;
-		}
-		this->start();
-	}
+	RR_SJF();
 	~RR_SJF() {}
 };
