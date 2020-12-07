@@ -43,10 +43,10 @@ void RR_SJF::from_hand()
 		int n = 1;
 		do
 		{
-			if (n <= 0) cout << "¬ведите значение больше 0";
+			if (n < 0) cout << "¬ведите значение больше 0";
 			cout << "\n" << a << "\n";
 			cin >> n;
-		} while (n <= 0);
+		} while (n < 0);
 		return n;
 	};
 
