@@ -21,6 +21,7 @@ RR_SJF::RR_SJF()
 	}
 	this->preparation();
 	this->start();
+	this->specifications();
 }
 void RR_SJF::from_file()
 {
@@ -183,8 +184,6 @@ void RR_SJF::start()
 		this->print_logs();
 		(*IT).SetRTime((*IT).GetRTime() - 1);
 	};
-
-	this->specifications();
 }
 
 bool RR_SJF::fin()
