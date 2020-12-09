@@ -19,6 +19,7 @@ public:
 	void print();
 	void print_logs();
 
+	void preparation();
 	void start();
 	bool fin();
 	vector<Process>::iterator GetIT(int num);

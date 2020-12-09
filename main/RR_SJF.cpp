@@ -19,6 +19,7 @@ RR_SJF::RR_SJF()
 		this->from_file();
 		break;
 	}
+	this->preparation();
 	this->start();
 }
 void RR_SJF::from_file()
@@ -52,10 +53,10 @@ void RR_SJF::from_file()
 void RR_SJF::from_hand()
 {
 	int power = 1;
-	function<string(string)> f2 = [](string a)
+	function<string(string, int)> f2 = [](string a, int i)
 	{
 		string n = "Std_name";
-		cout << "\n" << a << "\n";
+		cout << "\n" << a << i << "\n";
 		cin >> n;
 		return n;
 	};
@@ -76,7 +77,7 @@ void RR_SJF::from_hand()
 
 	for (int i = 0; i < n; i++)
 	{
-		PrName = f2("¬ведите название процесса");
+		PrName = f2("¬ведите название процесса ", i);
 		this->v.push_back(Process(PrName, f("¬ведите врем€ выполнени€ процесса", 0), f("¬ведите врем€ по€влени€ процесса в системе", 0)));
 	}
 }
@@ -134,25 +135,32 @@ vector<Process>::iterator RR_SJF::GetIT(int num)
 	return it;
 }
 
-void RR_SJF::start()
+void RR_SJF::preparation()
 {
 	system("cls");
 	print();
-	cout << "\n\n"; 
+	cout << "\n\n";
 	auto IT = this->v.begin();
 
-	for (;IT!=v.end();IT++)
+	for (; IT != v.end(); IT++)
 	{
 		cout << (*IT).GetName() << "\t";
 		if ((*IT).GetBTime() == 0)
 			(*IT).SetStatus(St::ready);
-		else (*IT).SetStatus(St::not_launched);
+		else 
+		{ 
+			(*IT).SetStatus(St::not_launched); 
+			(*IT).SetBTime((*IT).GetBTime() + 1);
+		}
 	}
 	cout << endl;
+}
 
+void RR_SJF::start()
+{
+	auto IT = this->v.begin();
 	int PrPrev = -1;
 	int PrNow = 0;
-	this->print_logs();
 
 	while (fin())
 	{
