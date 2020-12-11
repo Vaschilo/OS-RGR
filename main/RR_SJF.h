@@ -24,7 +24,7 @@ public:
 	bool fin();
 	vector<Process>::iterator GetIT(int num);
 	void specifications();
-	int GetNewProcess();
+	int GetNewProcess_ReStatus();
 
 	RR_SJF();
 	~RR_SJF() {}

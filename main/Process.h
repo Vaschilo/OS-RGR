@@ -8,7 +8,8 @@ enum class St
 	not_launched = 0,
 	ready = 1,
 	run = 2,
-	done = 3
+	done = 3,
+	start = 4
 };
 
 class Process
