@@ -5,8 +5,6 @@
 #include <algorithm>
 #include <fstream>
 
-#define Kvant_const 3
-
 class RR_SJF
 {
 private:

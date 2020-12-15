@@ -119,7 +119,8 @@ int RR_SJF::GetNewProcess_ReStatus()
 		if ((*IT).GetStatus() == St::ready || (*IT).GetStatus() == St::run)
 		{
 			(*IT).SetAllTime((*IT).GetAllTime() + 1);
-			if ((*IT).GetRTime() < min)
+
+			if ((*IT).GetRTime() < min)// SIF
 			{
 			min = (*IT).GetRTime();
 			num = i;
@@ -146,12 +147,6 @@ void RR_SJF::preparation()
 	for (; IT != v.end(); IT++)
 	{
 		cout << (*IT).GetName() << "\t";
-		/*if ((*IT).GetBTime() == 0)
-			(*IT).SetStatus(St::ready);
-		else 
-		{ 
-			(*IT).SetStatus(St::not_launched); 
-		}*/
 		(*IT).SetStatus(St::not_launched);
 	}
 	cout << endl;
@@ -183,8 +178,6 @@ void RR_SJF::start()
 			else (*IT).SetStatus(St::ready);
 			PrPrev = PrNow;
 		}
-
-		
 	};
 }
 
